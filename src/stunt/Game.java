@@ -3,9 +3,12 @@ package stunt;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import handlers.GameStateManager;
+import handlers.MyInput;
+import handlers.MyInputProcessor;
 
 public class Game implements ApplicationListener{
 	private SpriteBatch sb;
@@ -21,6 +24,10 @@ public class Game implements ApplicationListener{
 	@Override
 	public void create() {
 		
+		
+		
+		
+		Gdx.input.setInputProcessor(new MyInputProcessor());
 		sb = new SpriteBatch();
 		cam = new OrthographicCamera();
 		cam.setToOrtho(false, Globals.V_WIDTH, Globals.V_HEIGHT);
@@ -52,7 +59,10 @@ public class Game implements ApplicationListener{
 			accum -= Globals.STEP;
 			gsm.update(Globals.STEP);
 			gsm.render();
+			MyInput.update();
 		}
+		
+		
 		
 	}
 
