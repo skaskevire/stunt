@@ -5,12 +5,15 @@ package states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.particles.values.LineSpawnShapeValue;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -33,16 +36,17 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 import handlers.GameStateManager;
 import handlers.MyInput;
+import stunt.Game;
 import stunt.Globals;
 
 public class Play extends GameState{
 	private World world;
 	private Box2DDebugRenderer b2dr;
 	private OrthographicCamera b2dCam;
-	//private float tileSize;
+	private float tileSize;
 	
-//	private TiledMap tileMap;
-//	private OrthogonalTiledMapRenderer tmr;
+	private TiledMap tileMap;
+	private OrthogonalTiledMapRenderer tmr;
 	
 	private Body playerBody;
 	private Body playerBody2;
@@ -50,13 +54,57 @@ public class Play extends GameState{
 	private Body playerBody4;
 	private Body playerBody5;
 	private Body playerBody6;
-	//private BitmapFont font = new BitmapFont();
+	private BitmapFont font = new BitmapFont();
+	
+	
+	
+
 	public Play(GameStateManager gsm) {
 		super(gsm);
 		
 		world = new World(new Vector2(0,-1.8f), true);
 		b2dr = new Box2DDebugRenderer();		
+		
+		
+		Texture box25tex = Game.res.getTexture("box25");
 
+		createTerrainCurve();
+		
+		createTruck();
+		
+		
+		
+		b2dCam = new OrthographicCamera();
+		b2dCam.setToOrtho(false, Globals.V_WIDTH / Globals.PPM, Globals.V_HEIGHT / Globals.PPM );
+		
+		createObstacles();
+		//static body - don't move, unaffected by forces - ground		
+		//kinematic - don't get affected by forces ( moving platform )		
+		//dynamic body - always ged affected by forces ( player )	
+		
+		
+		
+		
+		//////////// < tiled staff >
+		
+		tileMap = new TmxMapLoader().load("res/maps/test.tmx");
+		tmr = new OrthogonalTiledMapRenderer(tileMap);
+		
+		TiledMapTileLayer layer = (TiledMapTileLayer) tileMap.getLayers().get("main");
+		tileSize = layer.getTileWidth();
+		
+		///////////  </ tiled staff >
+		
+
+	}
+	
+	
+	
+	
+	
+	
+	private Vector2[] createTerrainCurve()
+	{
 		Vector2[] vectorArray = new Vector2[12];
 		vectorArray[0] = new Vector2(0,30);
 		vectorArray[1] = new Vector2(100/ Globals.PPM,60/ Globals.PPM);
@@ -73,8 +121,88 @@ public class Play extends GameState{
 
 		
 		createTerrain(world, 0,-40 / Globals.PPM, vectorArray);
-
 		
+		return vectorArray;
+	}
+	
+	
+	private void createObstacles()
+	{
+		
+		float tLength = 4f;
+		float twidth = 1f;
+		Body[] track = new Body[11];
+		float length = (float) (101  / Globals.PPM);
+		float delta = (float) (tLength/Globals.PPM)*2;	
+		
+		
+		
+		
+		 tLength = 5f;
+		 twidth = 5f;
+		 track = new Body[128];
+		 length = (float) (634  / Globals.PPM);
+		 delta = 8 / Globals.PPM ;
+		
+		
+		for (int i = 0; i < track.length; i++) {
+			length = length + delta;
+			Body tr= rectangularBody(80f,world, length,146 / Globals.PPM,tLength / Globals.PPM, twidth / Globals.PPM);
+			track[i] = tr;
+		}
+		
+		
+		
+		 tLength = 1f;
+		 twidth = 15f;
+		 track = new Body[228];
+		 length = (float) (634  / Globals.PPM);
+		 delta = 8 / Globals.PPM ;
+		
+		
+		for (int i = 0; i < track.length; i++) {
+			length = length + delta;
+			Body tr= rectangularBody(80f,world, length,146 / Globals.PPM,tLength / Globals.PPM, twidth / Globals.PPM);
+			track[i] = tr;
+		}
+		
+		
+		
+		
+		 tLength = 15f;
+		 twidth = 15f;
+		 track = new Body[28];
+		 length = (float) (1234  / Globals.PPM);
+		 delta = 20 / Globals.PPM ;
+		
+		
+		for (int i = 0; i < track.length; i++) {
+			length = length + delta;
+			Body tr= rectangularBody(80f,world, length,146 / Globals.PPM,tLength / Globals.PPM, twidth / Globals.PPM);
+			track[i] = tr;
+		}
+		
+		
+		
+		
+		
+		 tLength = 25f;
+		 twidth = 25f;
+		 track = new Body[28];
+		 length = (float) (1434  / Globals.PPM);
+		 delta = 27 / Globals.PPM ;
+		
+		
+		for (int i = 0; i < track.length; i++) {
+			length = length + delta;
+			Body tr= rectangularBody(80f,world, length,146 / Globals.PPM,tLength / Globals.PPM, twidth / Globals.PPM);
+			track[i] = tr;
+		}
+	}
+	
+	
+	private void createTruck()
+	{
 		Body head = rectangularBody(10f,world, 165 / Globals.PPM,218 / Globals.PPM,20 / Globals.PPM, 10 / Globals.PPM);	
 		
 		Body body = truckBody(10f,world, 160 / Globals.PPM,120 / Globals.PPM,33 / Globals.PPM, 3 / Globals.PPM);	
@@ -95,7 +223,6 @@ public class Play extends GameState{
 				revoluteJoint(world, track[i], track[i+1], tLength/Globals.PPM, twidth/Globals.PPM, -tLength/Globals.PPM, twidth/Globals.PPM);
 			}
 		}
-		
 		
 		
 		
@@ -187,93 +314,24 @@ public class Play extends GameState{
 		revoluteJoint(world, playerBody4, d4, -0/Globals.PPM,-0/Globals.PPM, 0,-14/Globals.PPM);
 		revoluteJoint(world, playerBody5, d5, -0/Globals.PPM,-0/Globals.PPM, 0,-14/Globals.PPM);
 		revoluteJoint(world, playerBody6, d6, -0/Globals.PPM,-0/Globals.PPM, 0,-14/Globals.PPM);
-		
-		b2dCam = new OrthographicCamera();
-		b2dCam.setToOrtho(false, Globals.V_WIDTH / Globals.PPM, Globals.V_HEIGHT / Globals.PPM );
-		//static body - don't move, unaffected by forces - ground		
-		//kinematic - don't get affected by forces ( moving platform )		
-		//dynamic body - always ged affected by forces ( player )	
-		
-		
-		
-		
-		//////////// < tiled staff >
-		
-		//tileMap = new TmxMapLoader().load("res/maps/test.tmx");
-		//tmr = new OrthogonalTiledMapRenderer(tileMap);
-		
-		//TiledMapTileLayer layer = (TiledMapTileLayer) tileMap.getLayers().get("main");
-		//tileSize = layer.getTileWidth();
-		
-		///////////  </ tiled staff >
-		
-		
-		
-		
-		
-		
-		
-		 tLength = 5f;
-		 twidth = 5f;
-		 track = new Body[128];
-		 length = (float) (634  / Globals.PPM);
-		 delta = 8 / Globals.PPM ;
-		
-		
-		for (int i = 0; i < track.length; i++) {
-			length = length + delta;
-			Body tr= rectangularBody(80f,world, length,146 / Globals.PPM,tLength / Globals.PPM, twidth / Globals.PPM);
-			track[i] = tr;
-		}
-		
-		
-		
-		 tLength = 1f;
-		 twidth = 15f;
-		 track = new Body[228];
-		 length = (float) (634  / Globals.PPM);
-		 delta = 8 / Globals.PPM ;
-		
-		
-		for (int i = 0; i < track.length; i++) {
-			length = length + delta;
-			Body tr= rectangularBody(80f,world, length,146 / Globals.PPM,tLength / Globals.PPM, twidth / Globals.PPM);
-			track[i] = tr;
-		}
-		
-		
-		
-		
-		 tLength = 15f;
-		 twidth = 15f;
-		 track = new Body[28];
-		 length = (float) (1234  / Globals.PPM);
-		 delta = 20 / Globals.PPM ;
-		
-		
-		for (int i = 0; i < track.length; i++) {
-			length = length + delta;
-			Body tr= rectangularBody(80f,world, length,146 / Globals.PPM,tLength / Globals.PPM, twidth / Globals.PPM);
-			track[i] = tr;
-		}
-		
-		
-		
-		
-		
-		 tLength = 25f;
-		 twidth = 25f;
-		 track = new Body[28];
-		 length = (float) (1434  / Globals.PPM);
-		 delta = 27 / Globals.PPM ;
-		
-		
-		for (int i = 0; i < track.length; i++) {
-			length = length + delta;
-			Body tr= rectangularBody(80f,world, length,146 / Globals.PPM,tLength / Globals.PPM, twidth / Globals.PPM);
-			track[i] = tr;
-		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	private Body createTerrain(World world, float x, float y, Vector2[] vectorArray)
 	{
@@ -536,6 +594,8 @@ public class Play extends GameState{
 		handleInput();
 		world.step(dt, 6, 2);
 		
+		
+		sb.setProjectionMatrix(b2dCam.combined);
 	}
 
 	@Override
@@ -544,8 +604,26 @@ public class Play extends GameState{
 		b2dCam.update();
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		//tmr.setView(b2dCam);
-		//tmr.render();
+		tmr.setView(b2dCam);
+		tmr.render();
+		
+		
+		
+		
+		sb.begin();
+		//sb.draw(Game.res.getTexture("wheel10"), playerBody.getPosition().x - 5/Globals.PPM, playerBody.getPosition().y- 5/Globals.PPM, 10/Globals.PPM, 10/Globals.PPM);
+		sb.draw(new TextureRegion(Game.res.getTexture("wheel10")), playerBody.getPosition().x- 5/Globals.PPM, playerBody.getPosition().y- 5/Globals.PPM, 5/Globals.PPM, 5/Globals.PPM, 10/Globals.PPM, 10/Globals.PPM, 1, 1 , playerBody.getAngle() * MathUtils.radiansToDegrees, false);
+		sb.draw(new TextureRegion(Game.res.getTexture("wheel10")), playerBody2.getPosition().x- 5/Globals.PPM, playerBody2.getPosition().y- 5/Globals.PPM, 5/Globals.PPM, 5/Globals.PPM, 10/Globals.PPM, 10/Globals.PPM, 1, 1 , playerBody2.getAngle() * MathUtils.radiansToDegrees, false);
+
+		sb.draw(new TextureRegion(Game.res.getTexture("wheel10")), playerBody3.getPosition().x- 5/Globals.PPM, playerBody3.getPosition().y- 5/Globals.PPM, 5/Globals.PPM, 5/Globals.PPM, 10/Globals.PPM, 10/Globals.PPM, 1, 1 , playerBody3.getAngle() * MathUtils.radiansToDegrees, false);
+
+		sb.draw(new TextureRegion(Game.res.getTexture("wheel10")), playerBody4.getPosition().x- 5/Globals.PPM, playerBody4.getPosition().y- 5/Globals.PPM, 5/Globals.PPM, 5/Globals.PPM, 10/Globals.PPM, 10/Globals.PPM, 1, 1 , playerBody4.getAngle() * MathUtils.radiansToDegrees, false);
+		sb.draw(new TextureRegion(Game.res.getTexture("wheel10")), playerBody5.getPosition().x- 5/Globals.PPM, playerBody5.getPosition().y- 5/Globals.PPM, 5/Globals.PPM, 5/Globals.PPM, 10/Globals.PPM, 10/Globals.PPM, 1, 1 , playerBody5.getAngle() * MathUtils.radiansToDegrees, false);
+		sb.draw(new TextureRegion(Game.res.getTexture("wheel10")), playerBody6.getPosition().x- 5/Globals.PPM, playerBody6.getPosition().y- 5/Globals.PPM, 5/Globals.PPM, 5/Globals.PPM, 10/Globals.PPM, 10/Globals.PPM, 1, 1 , playerBody6.getAngle() * MathUtils.radiansToDegrees, false);
+
+		sb.end();
+		
+		
 		
 		
 		

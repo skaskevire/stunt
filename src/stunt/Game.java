@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import handlers.Content;
 import handlers.GameStateManager;
 import handlers.MyInput;
 import handlers.MyInputProcessor;
@@ -19,11 +20,15 @@ public class Game implements ApplicationListener{
 	
 	private float accum;
 	
+	public static Content res;
+	
 	
 
 	@Override
 	public void create() {
-		
+		res = new Content();
+		res.loadTexture("res/images/box.png", "box25");
+		res.loadTexture("res/images/wheel.gif", "wheel10");
 		
 		
 		
