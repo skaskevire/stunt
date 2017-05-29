@@ -68,12 +68,8 @@ public final class BodyCreationUtils {
 		com.badlogic.gdx.physics.box2d.joints.PrismaticJointDef revoluteJointDef2 = new PrismaticJointDef();
 		revoluteJointDef2.lowerTranslation = 0f/Globals.PPM;
 		revoluteJointDef2.upperTranslation = 8f/Globals.PPM;
-		//revoluteJointDef2.referenceAngle = 0f;
 		revoluteJointDef2.enableLimit=true;
 		revoluteJointDef2.collideConnected = false;
-	//	revoluteJointDef2.enableMotor=true;
-		//revoluteJointDef2.maxMotorForce=-3;
-		//revoluteJointDef2.motorSpeed = -0.1f;
 		revoluteJointDef2.localAxisA.add(0, 12);
 		  revoluteJointDef2.bodyA = a;
 		  revoluteJointDef2.bodyB = b;
