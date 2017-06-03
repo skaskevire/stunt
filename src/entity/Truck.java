@@ -1,6 +1,7 @@
 package entity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -12,11 +13,15 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
+
+import handlers.MyInput;
+
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 import stunt.Game;
 import stunt.Globals;
 import util.BodyCreationUtils;
+import util.BodyUserData;
 
 public class Truck implements Entity{
 
@@ -24,8 +29,10 @@ public class Truck implements Entity{
 	
 
 	private List<Body> rollers;
+	private List<Body> tracks;
 	private Body cargo;
 	private Body truckBody;
+	private Body kabina;
 	private OrthographicCamera b2dCam;
 	
 	public Truck(World world, OrthographicCamera b2dCam)
@@ -35,9 +42,17 @@ public class Truck implements Entity{
 		rollers = new ArrayList<Body>();
 		
 		cargo = BodyCreationUtils.rectangularBody(10f,world, 165 / Globals.PPM,218 / Globals.PPM,20 / Globals.PPM, 10 / Globals.PPM);	
+		BodyUserData bud = new BodyUserData();
+		bud.setHeight(10);
+		bud.setWidth(20);
+		cargo.setUserData(bud);
+		
+		
+		
+		
 		truckBody = createTruckBody(10f, world, 160 / Globals.PPM,120 / Globals.PPM,33 / Globals.PPM, 3 / Globals.PPM);
 	
-		createTracks();
+		tracks = createTracks();
 		createRollers();
 		attachWheels(truckBody);
 		
@@ -107,7 +122,7 @@ public class Truck implements Entity{
 		return body;
 	}
 	
-	private void createTracks()
+	private List<Body> createTracks()
 	{
 		float tLength = 4f;
 		float twidth = 1f;
@@ -177,10 +192,28 @@ public class Truck implements Entity{
 		BodyCreationUtils.revoluteJoint(world, trackl[0], track[0], -tLength/Globals.PPM, twidth/Globals.PPM, -tLength/Globals.PPM, -twidth/Globals.PPM);
 		BodyCreationUtils.revoluteJoint(world, trackttt[trackttt.length-1], trackl[trackl.length-1], tLength/Globals.PPM, -twidth/Globals.PPM, tLength/Globals.PPM, twidth/Globals.PPM);
 
+		List<Body> tracks = new ArrayList<Body>(Arrays.asList(track));
+		tracks.addAll(Arrays.asList(trackl));
+		tracks.addAll(Arrays.asList(trackttt));
+		return tracks;
 	}
 	@Override
 	public void update(float dt) {
-		// TODO Auto-generated method stub
+		float force = 0.0007f;
+		if(MyInput.isDown(MyInput.BUTTON1))
+		{
+			for(Body roller : rollers)
+			{
+				roller.applyAngularImpulse(force, true);
+			}		
+		}
+		if(MyInput.isDown(MyInput.BUTTON2))
+		{
+			for(Body roller : rollers)
+			{
+				roller.applyAngularImpulse(-force, true);
+			}
+		}
 		
 	}
 
@@ -188,10 +221,51 @@ public class Truck implements Entity{
 	public void render(SpriteBatch sb) {
 		b2dCam.position.set(new Vector3(rollers.get(2).getPosition().x, rollers.get(2).getPosition().y, 0));
 		b2dCam.update();
+		sb.begin();
 		for(Body roller : rollers)
 		{
-			sb.draw(new TextureRegion(Game.res.getTexture("wheel10")), roller.getPosition().x- 5/Globals.PPM, roller.getPosition().y- 5/Globals.PPM, 5/Globals.PPM, 5/Globals.PPM, 10/Globals.PPM, 10/Globals.PPM, 1, 1 , roller.getAngle() * MathUtils.radiansToDegrees, false);
-		}	
+			sb.draw(new TextureRegion(
+					Game.res.getTexture("wheel10")),
+					roller.getPosition().x- 5/Globals.PPM, roller.getPosition().y- 5/Globals.PPM,
+					5/Globals.PPM, 5/Globals.PPM,
+					10/Globals.PPM, 10/Globals.PPM,
+					1, 1,
+					roller.getAngle() * MathUtils.radiansToDegrees, false);
+		}
+		
+		for(Body track : tracks)
+		{
+			sb.draw(new TextureRegion(
+					Game.res.getTexture("trackEntity")),
+					track.getPosition().x- 2/Globals.PPM, track.getPosition().y- 4f/Globals.PPM,
+					1/Globals.PPM, 5f/Globals.PPM,
+					4f/Globals.PPM, 10f/Globals.PPM,
+					1, 1, 
+					track.getAngle() * MathUtils.radiansToDegrees + 90f, false);
+		}
+		
+		sb.draw(new TextureRegion(
+				Game.res.getTexture("truck")),
+				truckBody.getPosition().x- 35/Globals.PPM, truckBody.getPosition().y- 60/Globals.PPM,
+				35f/Globals.PPM, 60f/Globals.PPM,
+				60f/Globals.PPM, 120f/Globals.PPM,
+				1, 1, 
+				truckBody.getAngle() * MathUtils.radiansToDegrees - 90f, false);
+		
+		
+		
+		
+		
+		sb.draw(new TextureRegion(
+				Game.res.getTexture("box25")),
+				cargo.getPosition().x- ((BodyUserData)cargo.getUserData()).getHeight()/(Globals.PPM * 2), cargo.getPosition().y- ((BodyUserData)cargo.getUserData()).getWidth()/(Globals.PPM * 2),
+				((BodyUserData)cargo.getUserData()).getHeight()/(Globals.PPM * 2),((BodyUserData)cargo.getUserData()).getWidth()/(Globals.PPM * 2),
+				((BodyUserData)cargo.getUserData()).getHeight()/Globals.PPM, ((BodyUserData)cargo.getUserData()).getWidth()/Globals.PPM,
+				2, 2,
+				cargo.getAngle() * MathUtils.radiansToDegrees + 90f, false);
+
+		
+		sb.end();
 	}
 
 	@Override

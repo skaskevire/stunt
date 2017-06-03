@@ -1,5 +1,6 @@
 package states;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
@@ -41,7 +42,8 @@ public class Play extends GameState{
 		b2dCam = new OrthographicCamera();
 		b2dCam.setToOrtho(false, Globals.V_WIDTH / Globals.PPM, Globals.V_HEIGHT / Globals.PPM );
 		
-		entities.put("ground", new Ground(world));
+		entities = new HashMap<String, Entity>();
+		entities.put("ground", new Ground(world, b2dCam));
 		entities.put("truck", new Truck(world, b2dCam));		
 		
 		//////////// < tiled staff >
@@ -78,15 +80,15 @@ public class Play extends GameState{
 	public void render() {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		tmr.setView(b2dCam);
-		tmr.render();		
+		//tmr.setView(b2dCam);
+		//tmr.render();		
 		
 		for(Entity entity: entities.values())
 		{
 			entity.render(sb);
 		}
-		
-		b2dr.render(world,b2dCam.combined);
+
+		//b2dr.render(world,b2dCam.combined);
 	}
 
 	@Override

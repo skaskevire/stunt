@@ -26,9 +26,11 @@ public class Game implements ApplicationListener{
 	@Override
 	public void create() {
 		res = new Content();
-		res.loadTexture("res/images/box.png", "box25");
+		res.loadTexture("res/images/box.gif", "box25");
 		res.loadTexture("res/images/wheel.gif", "wheel10");
-		
+		res.loadTexture("res/images/track.gif", "trackEntity");
+		res.loadTexture("res/images/pritsep.gif", "pritsep");
+		res.loadTexture("res/images/truck.gif", "truck");
 		
 		
 		Gdx.input.setInputProcessor(new MyInputProcessor());

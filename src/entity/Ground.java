@@ -1,31 +1,55 @@
 package entity;
 
+import java.awt.geom.RectangularShape;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
+import com.badlogic.gdx.graphics.g2d.PolygonSprite;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.EarClippingTriangulator;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.ShortArray;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
+import stunt.Game;
 import stunt.Globals;
 import util.BodyCreationUtils;
+import util.BodyUserData;
 
 public class Ground implements Entity {
 	private World world;
+	private List<Body> obstacles;
+	private Body ground;OrthographicCamera b2dCam;
 	
-	public Ground(World world)
+	
+	Vector2[] vectorArray;
+	
+	public Ground(World world, OrthographicCamera b2dCam)
 	{
 		this.world = world;
-		createTerrainCurve();
-		createObstacles();
+		this.b2dCam = b2dCam;
+		vectorArray = createTerrainCurve();
+		obstacles = createObstacles();
 	}
 	
 	private Vector2[] createTerrainCurve()
 	{
-		Vector2[] vectorArray = new Vector2[12];
-		vectorArray[0] = new Vector2(0,30);
+		Vector2[] vectorArray = new Vector2[24];
+		vectorArray[0] = new Vector2(0,30/ Globals.PPM);
 		vectorArray[1] = new Vector2(100/ Globals.PPM,60/ Globals.PPM);
 		vectorArray[2] = new Vector2(110/ Globals.PPM,70/ Globals.PPM);
 		vectorArray[3] = new Vector2(200/ Globals.PPM,40/ Globals.PPM);
@@ -36,10 +60,22 @@ public class Ground implements Entity {
 		vectorArray[8] = new Vector2(900/ Globals.PPM,40/ Globals.PPM);
 		vectorArray[9] = new Vector2(1200/ Globals.PPM,0/ Globals.PPM);
 		vectorArray[10] = new Vector2(5000/Globals.PPM,0/ Globals.PPM);
-		vectorArray[11] = new Vector2(5000/Globals.PPM,1000/ Globals.PPM);	
-
+		vectorArray[11] = new Vector2(5000/Globals.PPM,1000/ Globals.PPM);
 		
-		createTerrain(world, 0,-40 / Globals.PPM, vectorArray);
+
+		vectorArray[12] = new Vector2(5000/Globals.PPM,800/ Globals.PPM);
+		vectorArray[13] = new Vector2(5000/Globals.PPM,-200/ Globals.PPM);
+		vectorArray[14] = new Vector2(1200/ Globals.PPM,-200/ Globals.PPM);
+		vectorArray[15] = new Vector2(900/ Globals.PPM,-160/ Globals.PPM);
+		vectorArray[16] = new Vector2(720/ Globals.PPM,-150/ Globals.PPM);
+		vectorArray[17] = new Vector2(720/ Globals.PPM,-100/ Globals.PPM);
+		vectorArray[18] = new Vector2(620/ Globals.PPM,-150/ Globals.PPM);
+		vectorArray[19] = new Vector2(220/ Globals.PPM,-150/ Globals.PPM);
+		vectorArray[20] = new Vector2(200/ Globals.PPM,-160/ Globals.PPM);
+		vectorArray[21] = new Vector2(110/ Globals.PPM,-130/ Globals.PPM);
+		vectorArray[22] = new Vector2(100/ Globals.PPM,-140/ Globals.PPM);
+		vectorArray[23] = new Vector2(0,-170);
+		ground = createTerrain(world, 0,-40 / Globals.PPM, vectorArray);
 		
 		return vectorArray;
 	}
@@ -63,7 +99,7 @@ public class Ground implements Entity {
 		return body;
 	}
 	
-	private void createObstacles()
+	private List<Body> createObstacles()
 	{
 		
 		float tLength = 4f;
@@ -86,8 +122,19 @@ public class Ground implements Entity {
 			length = length + delta;
 			Body tr= BodyCreationUtils.rectangularBody(80f,world, length,146 / Globals.PPM,tLength / Globals.PPM, twidth / Globals.PPM);
 			track[i] = tr;
+			
+			
+			BodyUserData bud = new BodyUserData();
+			bud.setHeight(twidth);
+			bud.setWidth(tLength);
+			track[i].setUserData(bud);
 		}
 		
+		
+		
+		
+		
+		List<Body> tracks = new ArrayList<Body>(Arrays.asList(track));
 		
 		
 		 tLength = 1f;
@@ -101,7 +148,18 @@ public class Ground implements Entity {
 			length = length + delta;
 			Body tr= BodyCreationUtils.rectangularBody(80f,world, length,146 / Globals.PPM,tLength / Globals.PPM, twidth / Globals.PPM);
 			track[i] = tr;
+			
+			BodyUserData bud = new BodyUserData();
+			bud.setHeight(twidth);
+			bud.setWidth(tLength);
+			track[i].setUserData(bud);
 		}
+		
+		
+		
+		
+		
+		tracks.addAll(Arrays.asList(track));
 		
 		
 		
@@ -117,10 +175,15 @@ public class Ground implements Entity {
 			length = length + delta;
 			Body tr= BodyCreationUtils.rectangularBody(80f,world, length,146 / Globals.PPM,tLength / Globals.PPM, twidth / Globals.PPM);
 			track[i] = tr;
+			
+			BodyUserData bud = new BodyUserData();
+			bud.setHeight(twidth);
+			bud.setWidth(tLength);
+			track[i].setUserData(bud);
 		}
 		
 		
-		
+		tracks.addAll(Arrays.asList(track));
 		
 		
 		 tLength = 25f;
@@ -134,7 +197,19 @@ public class Ground implements Entity {
 			length = length + delta;
 			Body tr= BodyCreationUtils.rectangularBody(80f,world, length,146 / Globals.PPM,tLength / Globals.PPM, twidth / Globals.PPM);
 			track[i] = tr;
+			
+			BodyUserData bud = new BodyUserData();
+			bud.setHeight(twidth);
+			bud.setWidth(tLength);
+			track[i].setUserData(bud);
 		}
+		
+		
+		
+		tracks.addAll(Arrays.asList(track));
+	
+
+		return tracks;
 	}
 	
 	@Override
@@ -145,7 +220,57 @@ public class Ground implements Entity {
 
 	@Override
 	public void render(SpriteBatch sb) {
-		// TODO Auto-generated method stub
+
+
+		
+	/*	EarClippingTriangulator a = new EarClippingTriangulator();
+		ground.getFixtureList().get(0);
+		 float[] vertices = new float[vectorArray.length * 2];
+		int vl = 0;
+		 for (int i = 0; i < vectorArray.length ; i++) {
+		        vertices[vl] = vectorArray[i].x*  Globals.PPM - b2dCam.position.x*  Globals.PPM + 200;
+		        vl++;
+		        vertices[vl] = vectorArray[i].y *  Globals.PPM- b2dCam.position.y*  Globals.PPM + 200;
+		        vl++;
+		    }
+		 ShortArray sar = a.computeTriangles(vertices);
+		 short[] shortarray = new short[sar.size];
+		    for (int i = 0; i < sar.size; i++)
+		        shortarray[i] = sar.get(i);
+		 
+		    PolygonRegion pr = new PolygonRegion(new TextureRegion(
+					Game.res.getTexture("box25")), vertices, shortarray);
+		    PolygonSprite poly = new PolygonSprite(pr);
+		    PolygonSpriteBatch polyBatch = new PolygonSpriteBatch();
+		   
+		    
+		    
+		    polyBatch.begin();
+		    poly.draw(polyBatch);
+		    polyBatch.end();*/
+		
+		
+		
+
+		
+		sb.begin();
+		
+		
+
+		
+		for(Body obstacle : obstacles)
+		{
+
+				sb.draw(new TextureRegion(
+						Game.res.getTexture("box25")),
+						obstacle.getPosition().x- ((BodyUserData)obstacle.getUserData()).getHeight()/(Globals.PPM * 2), obstacle.getPosition().y- ((BodyUserData)obstacle.getUserData()).getWidth()/(Globals.PPM * 2),
+						((BodyUserData)obstacle.getUserData()).getHeight()/(Globals.PPM * 2),((BodyUserData)obstacle.getUserData()).getWidth()/(Globals.PPM * 2),
+						((BodyUserData)obstacle.getUserData()).getHeight()/Globals.PPM, ((BodyUserData)obstacle.getUserData()).getWidth()/Globals.PPM,
+						2, 2,
+						obstacle.getAngle() * MathUtils.radiansToDegrees + 90f, false);
+		}
+		
+		sb.end();
 
 	}
 
