@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 
+import entity.Background;
 import entity.Entity;
 import entity.Ground;
 import entity.Truck;
@@ -44,7 +45,8 @@ public class Play extends GameState{
 		
 		entities = new HashMap<String, Entity>();
 		entities.put("ground", new Ground(world, b2dCam));
-		entities.put("truck", new Truck(world, b2dCam));		
+		entities.put("truck", new Truck(world, b2dCam));
+		entities.put("background", new Background());		
 		
 		//////////// < tiled staff >
 		

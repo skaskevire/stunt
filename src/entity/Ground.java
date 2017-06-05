@@ -223,14 +223,14 @@ public class Ground implements Entity {
 
 
 		
-	/*	EarClippingTriangulator a = new EarClippingTriangulator();
+		EarClippingTriangulator a = new EarClippingTriangulator();
 		ground.getFixtureList().get(0);
 		 float[] vertices = new float[vectorArray.length * 2];
 		int vl = 0;
 		 for (int i = 0; i < vectorArray.length ; i++) {
-		        vertices[vl] = vectorArray[i].x*  Globals.PPM - b2dCam.position.x*  Globals.PPM + 200;
+		        vertices[vl] = vectorArray[i].x*  Globals.PPM * 2 - b2dCam.position.x*  Globals.PPM * 2 + 240;
 		        vl++;
-		        vertices[vl] = vectorArray[i].y *  Globals.PPM- b2dCam.position.y*  Globals.PPM + 200;
+		        vertices[vl] = vectorArray[i].y *  Globals.PPM* 2 - b2dCam.position.y*  Globals.PPM * 2 + 240;
 		        vl++;
 		    }
 		 ShortArray sar = a.computeTriangles(vertices);
@@ -239,7 +239,7 @@ public class Ground implements Entity {
 		        shortarray[i] = sar.get(i);
 		 
 		    PolygonRegion pr = new PolygonRegion(new TextureRegion(
-					Game.res.getTexture("box25")), vertices, shortarray);
+					Game.res.getTexture("terrain1")), vertices, shortarray);
 		    PolygonSprite poly = new PolygonSprite(pr);
 		    PolygonSpriteBatch polyBatch = new PolygonSpriteBatch();
 		   
@@ -247,7 +247,7 @@ public class Ground implements Entity {
 		    
 		    polyBatch.begin();
 		    poly.draw(polyBatch);
-		    polyBatch.end();*/
+		    polyBatch.end();
 		
 		
 		
