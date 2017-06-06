@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -213,6 +214,11 @@ public class Truck implements Entity{
 			{
 				roller.applyAngularImpulse(-force, true);
 			}
+		}
+		
+		if(Gdx.input.isTouched(1))
+		{
+			System.out.println("dsadasd");
 		}
 		
 	}

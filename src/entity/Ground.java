@@ -74,7 +74,7 @@ public class Ground implements Entity {
 		vectorArray[20] = new Vector2(200/ Globals.PPM,-160/ Globals.PPM);
 		vectorArray[21] = new Vector2(110/ Globals.PPM,-130/ Globals.PPM);
 		vectorArray[22] = new Vector2(100/ Globals.PPM,-140/ Globals.PPM);
-		vectorArray[23] = new Vector2(0,-170);
+		vectorArray[23] = new Vector2(0,-170/ Globals.PPM);
 		ground = createTerrain(world, 0,-40 / Globals.PPM, vectorArray);
 		
 		return vectorArray;
@@ -224,13 +224,13 @@ public class Ground implements Entity {
 
 		
 		EarClippingTriangulator a = new EarClippingTriangulator();
-		ground.getFixtureList().get(0);
+
 		 float[] vertices = new float[vectorArray.length * 2];
 		int vl = 0;
 		 for (int i = 0; i < vectorArray.length ; i++) {
-		        vertices[vl] = vectorArray[i].x*  Globals.PPM * 2 - b2dCam.position.x*  Globals.PPM * 2 + 240;
+		        vertices[vl] = vectorArray[i].x;
 		        vl++;
-		        vertices[vl] = vectorArray[i].y *  Globals.PPM* 2 - b2dCam.position.y*  Globals.PPM * 2 + 240;
+		        vertices[vl] = vectorArray[i].y - 40/ Globals.PPM;
 		        vl++;
 		    }
 		 ShortArray sar = a.computeTriangles(vertices);
@@ -242,6 +242,7 @@ public class Ground implements Entity {
 					Game.res.getTexture("terrain1")), vertices, shortarray);
 		    PolygonSprite poly = new PolygonSprite(pr);
 		    PolygonSpriteBatch polyBatch = new PolygonSpriteBatch();
+		    polyBatch.setProjectionMatrix(sb.getProjectionMatrix());
 		   
 		    
 		    
