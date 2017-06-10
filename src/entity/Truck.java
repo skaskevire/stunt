@@ -33,7 +33,6 @@ public class Truck implements Entity{
 	private List<Body> tracks;
 	private Body cargo;
 	private Body truckBody;
-	private Body kabina;
 	private OrthographicCamera b2dCam;
 	
 	public Truck(World world, OrthographicCamera b2dCam)

@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.objects.PolylineMapObject;
 import com.badlogic.gdx.math.EarClippingTriangulator;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -37,6 +38,27 @@ public class Ground implements Entity {
 	
 	
 	Vector2[] vectorArray;
+	
+	public Ground(World world, OrthographicCamera b2dCam, PolylineMapObject ta)
+	{
+		
+		this.world = world;
+		this.b2dCam = b2dCam;
+		//obstacles = createObstacles();
+		
+		float[] vert = ta.getPolyline().getVertices();
+		vectorArray = new Vector2[vert.length / 2];
+		for(int i = 0,  vaI = 0 ;i < vert.length; i+=2)
+		{
+			vectorArray[vaI++] = new Vector2(vert[i]/ Globals.PPM, vert[i+1]/ Globals.PPM);
+		}
+		
+		
+		ground = createTerrain(world, 0,-40 / Globals.PPM, vectorArray);
+	}
+	
+	
+	
 	
 	public Ground(World world, OrthographicCamera b2dCam)
 	{
@@ -256,20 +278,23 @@ public class Ground implements Entity {
 		
 		sb.begin();
 		
-		
-
-		
-		for(Body obstacle : obstacles)
+		if(obstacles != null)
 		{
+			for(Body obstacle : obstacles)
+			{
 
-				sb.draw(new TextureRegion(
-						Game.res.getTexture("box25")),
-						obstacle.getPosition().x- ((BodyUserData)obstacle.getUserData()).getHeight()/(Globals.PPM * 2), obstacle.getPosition().y- ((BodyUserData)obstacle.getUserData()).getWidth()/(Globals.PPM * 2),
-						((BodyUserData)obstacle.getUserData()).getHeight()/(Globals.PPM * 2),((BodyUserData)obstacle.getUserData()).getWidth()/(Globals.PPM * 2),
-						((BodyUserData)obstacle.getUserData()).getHeight()/Globals.PPM, ((BodyUserData)obstacle.getUserData()).getWidth()/Globals.PPM,
-						2, 2,
-						obstacle.getAngle() * MathUtils.radiansToDegrees + 90f, false);
+					sb.draw(new TextureRegion(
+							Game.res.getTexture("box25")),
+							obstacle.getPosition().x- ((BodyUserData)obstacle.getUserData()).getHeight()/(Globals.PPM * 2), obstacle.getPosition().y- ((BodyUserData)obstacle.getUserData()).getWidth()/(Globals.PPM * 2),
+							((BodyUserData)obstacle.getUserData()).getHeight()/(Globals.PPM * 2),((BodyUserData)obstacle.getUserData()).getWidth()/(Globals.PPM * 2),
+							((BodyUserData)obstacle.getUserData()).getHeight()/Globals.PPM, ((BodyUserData)obstacle.getUserData()).getWidth()/Globals.PPM,
+							2, 2,
+							obstacle.getAngle() * MathUtils.radiansToDegrees + 90f, false);
+			}
 		}
+
+		
+		
 		
 		sb.end();
 

@@ -6,8 +6,10 @@ import java.util.Map;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.objects.PolylineMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -44,16 +46,25 @@ public class Play extends GameState{
 		b2dCam.setToOrtho(false, Globals.V_WIDTH / Globals.PPM, Globals.V_HEIGHT / Globals.PPM );
 		
 		entities = new HashMap<String, Entity>();
-		entities.put("ground", new Ground(world, b2dCam));
+		
 		entities.put("truck", new Truck(world, b2dCam));
 		entities.put("background", new Background());		
 		
 		//////////// < tiled staff >
 		
 		tileMap = new TmxMapLoader().load("res/maps/test.tmx");
-		tmr = new OrthogonalTiledMapRenderer(tileMap);
+		tmr = new OrthogonalTiledMapRenderer(tileMap,1 /Globals.PPM);
+
+		TiledMapTileLayer layer = (TiledMapTileLayer) tileMap.getLayers().get("Tile Layer 1");
+		layer.setOffsetX(0f);
+		layer.setOffsetY(808f);
+		PolylineMapObject ta = (PolylineMapObject) tileMap.getLayers().get("Object Layer 1").getObjects().get(0);
 		
-		TiledMapTileLayer layer = (TiledMapTileLayer) tileMap.getLayers().get("main");
+		
+		
+		
+		entities.put("ground", new Ground(world, b2dCam, ta));
+
 		tileSize = layer.getTileWidth();
 		
 		///////////  </ tiled staff >
@@ -82,15 +93,17 @@ public class Play extends GameState{
 	public void render() {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		//tmr.setView(b2dCam);
-		//tmr.render();		
+			
 		
 		for(Entity entity: entities.values())
 		{
 			entity.render(sb);
 		}
 
-		//b2dr.render(world,b2dCam.combined);
+		tmr.setView(b2dCam);
+		tmr.render();	
+
+		b2dr.render(world,b2dCam.combined);
 	}
 
 	@Override
