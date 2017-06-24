@@ -3,8 +3,10 @@ package entity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -218,6 +220,28 @@ public class Truck implements Entity{
 		if(Gdx.input.isTouched(1))
 		{
 			System.out.println("dsadasd");
+		}
+		
+		
+		for (Entry<Integer, MyInput.MonitorCoordinate> entry : MyInput.getActivePointers().entrySet()) {
+			System.out.println(entry.getValue().getX() + " " + entry.getValue().getY());
+			if (entry.getValue().getX() < 234
+					&& entry.getValue().getY() > 525) {
+				for(Body roller : rollers)
+				{
+					roller.applyAngularImpulse(force, true);
+				}		
+		
+			}
+			if (entry.getValue().getX() > 234
+					&& entry.getValue().getY() > 525) {
+				for(Body roller : rollers)
+				{
+					roller.applyAngularImpulse(-force, true);
+				}		
+		
+			}
+
 		}
 		
 	}

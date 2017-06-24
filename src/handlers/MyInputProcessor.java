@@ -30,5 +30,16 @@ public class MyInputProcessor extends InputAdapter{
 		return true;
 	}
 	
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		MyInput.touchDown(screenX, screenY, pointer);
+		return super.touchDown(screenX, screenY, pointer, button);
+	}
+	
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		MyInput.touchUp(pointer);
+		return super.touchUp(screenX, screenY, pointer, button);
+	}
 	
 }

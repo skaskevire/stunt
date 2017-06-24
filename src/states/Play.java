@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.objects.PolylineMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -25,6 +27,12 @@ import handlers.GameStateManager;
 import stunt.Globals;
 
 public class Play extends GameState{
+	
+	private BitmapFont l = new BitmapFont();
+	private BitmapFont r = new BitmapFont();
+
+	
+	
 	private World world;
 	private Box2DDebugRenderer b2dr;
 	private OrthographicCamera b2dCam;
@@ -92,8 +100,7 @@ public class Play extends GameState{
 	@Override
 	public void render() {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-			
+
 		
 		for(Entity entity: entities.values())
 		{
@@ -103,7 +110,9 @@ public class Play extends GameState{
 		tmr.setView(b2dCam);
 		tmr.render();	
 
-		b2dr.render(world,b2dCam.combined);
+	//	b2dr.render(world,b2dCam.combined);
+		
+
 	}
 
 	@Override

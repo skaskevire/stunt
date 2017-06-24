@@ -9,7 +9,8 @@ public class Globals {
 	
 	//Game states
 	public static final int PLAY_GS = 0;
-	
+	//Game states
+	public static final int MAINMENU_GS = 1;
 	
 	//Game configurations
 	public static final float STEP = 1 / 60f;
